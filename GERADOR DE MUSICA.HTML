@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlist Personalizada</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 30px; display: flex; flex-direction: column; align-items: center; }
+        .container { background-color: #1e1e1e; padding: 30px; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); border: 1px solid #333; width: 100%; max-width: 600px; }
+        h1 { margin-top: 0; color: #ffffff; text-align: center; font-size: 1.8rem; }
+        p { color: #b3b3b3; text-align: center; margin-bottom: 25px; font-size: 0.95rem; }
+        
+        /* Botão de Login do Spotify */
+        #btn-login { background-color: #1DB954; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 20px; }
+        #btn-login.conectado { background-color: #333; color: #1DB954; border: 1px solid #1DB954; cursor: default; }
+
+        .controles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; background-color: #181818; padding: 20px; border-radius: 8px; border: 1px solid #2a2a2a; }
+        .input-group { display: flex; justify-content: space-between; align-items: center; background-color: #222; padding: 8px 15px; border-radius: 6px; }
+        .input-group label { font-weight: 500; color: #ccc; font-size: 0.9rem; }
+        .input-wrapper { display: flex; align-items: center; }
+        .input-wrapper input { width: 50px; background-color: #333; color: #fff; border: 1px solid #444; padding: 5px; border-radius: 4px; text-align: center; font-weight: bold; }
+        .input-wrapper input:focus { outline: none; border-color: #4CAF50; }
+        
+        .btn-gerar { background-color: #4CAF50; color: white; border: none; padding: 15px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1rem; width: 100%; transition: all 0.2s; margin-bottom: 15px; }
+        .btn-gerar:hover { background-color: #45a049; }
+
+        .btn-exportar { background-color: #1DB954; color: white; border: none; padding: 15px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; width: 100%; transition: all 0.2s; margin-bottom: 30px; display: none; }
+        .btn-exportar:hover { background-color: #1ed760; }
+
+        #playlist-resultado { display: flex; flex-direction: column; gap: 8px; }
+        .track-item { display: flex; align-items: center; background-color: #181818; padding: 12px 20px; border-radius: 8px; text-decoration: none; color: #e0e0e0; border: 1px solid #222; }
+        .track-number { color: #888; font-weight: bold; width: 30px; }
+        .track-category { background-color: #333; font-size: 0.75rem; padding: 3px 8px; border-radius: 12px; margin-right: 15px; color: #aaa; min-width: 80px; text-align: center; }
+        .empty-state { text-align: center; color: #666; font-style: italic; padding: 20px 0; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Meu Mix Hiperfoco</h1>
+        <p>Crie sua playlist customizada em segundos.</p>
+        
+        <button id="btn-login" onclick="loginSpotify()">Conectar com Spotify</button>
+
+        <div class="controles-grid">
+            <div class="input-group"><label>Nostálgica</label><div class="input-wrapper"><input type="number" id="perc_nostalgica" min="0" value="0"></div></div>
+            <div class="input-group"><label>INFINITE</label><div class="input-wrapper"><input type="number" id="perc_infinite" min="0" value="0"></div></div>
+            <div class="input-group"><label>TRAP</label><div class="input-wrapper"><input type="number" id="perc_trap" min="0" value="0"></div></div>
+            <div class="input-group"><label>FOCO</label><div class="input-wrapper"><input type="number" id="perc_foco" min="0" value="0"></div></div>
+            <div class="input-group"><label>MPB</label><div class="input-wrapper"><input type="number" id="perc_mpb" min="0" value="0"></div></div>
+            <div class="input-group"><label>Motivação</label><div class="input-wrapper"><input type="number" id="perc_motivacao" min="0" value="0"></div></div>
+            <div class="input-group"><label>De Agora</label><div class="input-wrapper"><input type="number" id="perc_de_agora" min="0" value="0"></div></div>
+        </div>
+
+        <button class="btn-gerar" onclick="gerarPlaylist()">1. Gerar Mix Perfeito</button>
+        <button id="btn-exportar" class="btn-exportar" onclick="exportarParaSpotifyAPI()">2. Criar Playlist Automática no Spotify ✨</button>
+
+        <div id="playlist-resultado">
+            <div class="empty-state">Sua playlist aparecerá aqui...</div>
+        </div>
+    </div>
+
+    <script>
+        // ======= CONFIGURAÇÕES DO SPOTIFY =======
+        const CLIENT_ID = '3effb29e1f6f451f82533d761edee1bd'; 
+        // Pega exatamente a URL onde você está acessando a página agora (ignora qualquer tralha no final)
+        const REDIRECT_URI = window.location.href.split('#')[0].split('?')[0]; 
+        let accessToken = null;
+        let linksAtuais = [];
+
+        // 1. Verifica se acabamos de voltar do login do Spotify
+        window.onload = () => {
+            const hash = window.location.hash.substring(1);
+            const params = new URLSearchParams(hash);
+            if (params.has('access_token')) {
+                accessToken = params.get('access_token');
+                // Limpa a URL para ficar bonita
+                window.history.pushState("", document.title, REDIRECT_URI);
+                
+                // Atualiza o botão
+                const btnLogin = document.getElementById('btn-login');
+                btnLogin.innerText = "🟢 Spotify Conectado";
+                btnLogin.classList.add("conectado");
+                btnLogin.onclick = null; // Remove a ação de clique
+            }
+        };
+
+        // 2. Manda o usuário para a tela de permissão do Spotify
+        function loginSpotify() {
+            const scopes = 'playlist-modify-public playlist-modify-private';
+            const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(scopes)}`;
+            window.location.href = authUrl;
+        }
+
+        // ======= LÓGICA DO SEU BANCO DE MÚSICAS =======
+        const nomesCategorias = { nostalgica: "Nostálgica", infinite: "INFINITE", trap: "TRAP", foco: "FOCO", mpb: "MPB", motivacao: "Motivação", de_agora: "De Agora" };
+        
+        // NOTA: Para a API do Spotify funcionar de verdade, os links aqui PRECISAM ser do tipo:
+        // "https://open.spotify.com/track/XXXXXXXXXXXXX"
+        // (Usei alguns exemplos reais aqui para você ver como funciona)
+        const bancoDeMusicas = {
+            "trap":["https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT", "https://open.spotify.com/track/7lQ8MZeD6cqHXYvqZMBB27"],
+            "nostalgica":["https://open.spotify.com/track/1di1E26AUQz7DihXqX2R1J", "https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC"],
+            "mpb":["https://open.spotify.com/track/6QScn2R7bTkiUeAabVd2N6", "https://open.spotify.com/track/3ZE0C3a2L4x64t1oI3iA3r"],
+            "motivacao":["https://open.spotify.com/track/27L8sESb3KR79asDUBu8av", "https://open.spotify.com/track/5u1n1kITHCxxp8twBcZxDz"],
+            "infinite":["https://open.spotify.com/track/5rX6C5QVvvZB7X14uEgw88", "https://open.spotify.com/track/3ee8Jmje8o58CHK66QrVC2"],
+            "foco":["https://open.spotify.com/track/6UelLqGlDPcVTMsSQIT2gO", "https://open.spotify.com/track/0RiRZpuVRbi7oqRdSMwhQY"],
+            "de_agora":["https://open.spotify.com/track/0pqnGHJpmpxLKifKRmU6WP", "https://open.spotify.com/track/3B54sVLJ402zHx6hQzF93z"]
+        };
+
+        function embaralhar(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function gerarPlaylist() {
+            const pesos = {
+                nostalgica: Number(document.getElementById('perc_nostalgica').value),
+                infinite: Number(document.getElementById('perc_infinite').value),
+                trap: Number(document.getElementById('perc_trap').value),
+                foco: Number(document.getElementById('perc_foco').value),
+                mpb: Number(document.getElementById('perc_mpb').value),
+                motivacao: Number(document.getElementById('perc_motivacao').value),
+                de_agora: Number(document.getElementById('perc_de_agora').value)
+            };
+
+            let somaPesos = Object.values(pesos).reduce((a, b) => a + b, 0);
+            if (somaPesos === 0) { alert("Adicione alguma porcentagem!"); return; }
+
+            let faixasSorteadas = [];
+            linksAtuais = []; 
+
+            // Algoritmo simplificado para puxar as músicas baseado no peso
+            for (let categoria in pesos) {
+                if(pesos[categoria] > 0 && bancoDeMusicas[categoria].length > 0) {
+                    // Tenta puxar de 1 a 3 faixas por categoria escolhida para o exemplo
+                    let misturado = embaralhar([...bancoDeMusicas[categoria]]);
+                    let link = misturado[0];
+                    
+                    faixasSorteadas.push({ categoria: nomesCategorias[categoria], link: link });
+                    linksAtuais.push(link);
+                }
+            }
+
+            const divResultado = document.getElementById('playlist-resultado');
+            divResultado.innerHTML = '';
+
+            faixasSorteadas.forEach((faixa, index) => {
+                divResultado.innerHTML += `
+                    <a href="${faixa.link}" target="_blank" class="track-item">
+                        <span class="track-number">${index + 1}</span>
+                        <span class="track-category">${faixa.categoria}</span>
+                        <span class="track-name">Música Sorteada</span>
+                    </a>
+                `;
+            });
+
+            document.getElementById('btn-exportar').style.display = 'block';
+        }
+
+        // ======= API DO SPOTIFY: CRIANDO A PLAYLIST =======
+        async function exportarParaSpotifyAPI() {
+            if (!accessToken) {
+                alert("Você precisa clicar em 'Conectar com Spotify' primeiro!");
+                return;
+            }
+
+            const btn = document.getElementById('btn-exportar');
+            btn.innerText = "⏳ Criando sua Playlist...";
+
+            try {
+                // 1. Pegar o ID do seu usuário
+                const userResponse = await fetch("https://api.spotify.com/v1/me", {
+                    headers: { 'Authorization': 'Bearer ' + accessToken }
+                });
+                const userData = await userResponse.json();
+                const userId = userData.id;
+
+                // 2. Criar a Playlist Vazia
+                const playlistResponse = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: "Mix Hiperfoco (" + new Date().toLocaleDateString() + ")",
+                        description: "Gerado automaticamente pelo Painel do Renanck",
+                        public: false
+                    })
+                });
+                const playlistData = await playlistResponse.json();
+                const playlistId = playlistData.id;
+
+                // 3. Converter seus links do banco para o formato "spotify:track:ID"
+                const urisParaAdicionar = linksAtuais.map(link => {
+                    const id = link.split('track/')[1].split('?')[0]; // Extrai o ID do link
+                    return `spotify:track:${id}`;
+                });
+
+                // 4. Inserir as músicas na Playlist
+                await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ uris: urisParaAdicionar })
+                });
+
+                btn.innerText = "✅ Sucesso! Abrir no Spotify";
+                btn.onclick = () => window.open(playlistData.external_urls.spotify, '_blank');
+                btn.style.backgroundColor = "#1ed760";
+
+            } catch (error) {
+                console.error(error);
+                alert("Ops! Ocorreu um erro de comunicação com o Spotify.");
+                btn.innerText = "Tentar Novamente";
+            }
+        }
+    </script>
+</body>
+</html>
