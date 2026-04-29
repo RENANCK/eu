@@ -11,127 +11,325 @@
       box-sizing: border-box;
     }
 
+    html,
     body {
       margin: 0;
+      min-height: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
       min-height: 100vh;
-      background: #b868d8;
-      font-family: Arial, sans-serif;
-      padding: 28px;
+      padding: 24px;
       overflow-x: hidden;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.35), transparent 28%),
+        radial-gradient(circle at 85% 20%, rgba(255, 140, 230, 0.35), transparent 30%),
+        linear-gradient(135deg, #8d46d9 0%, #c76be8 48%, #f3b6ff 100%);
+      color: #111;
     }
 
     .hub {
-      width: min(1300px, 100%);
-      min-height: calc(100vh - 56px);
+      width: min(1450px, 100%);
+      height: calc(100vh - 48px);
+      min-height: 720px;
       margin: 0 auto;
 
       display: grid;
-      grid-template-columns: 0.95fr 1.05fr;
-      grid-template-rows: 44% 56%;
-      gap: 26px 48px;
+      grid-template-columns: minmax(560px, 1.35fr) minmax(340px, 0.85fr);
+      grid-template-rows: minmax(360px, 0.58fr) minmax(280px, 0.42fr);
+      gap: 24px;
     }
 
-    .box {
-      background: #ececec;
-      border: 4px dashed #000;
-      overflow: hidden;
+    .card {
       position: relative;
+      overflow: hidden;
+      border-radius: 32px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 2px solid rgba(255, 255, 255, 0.75);
+      box-shadow:
+        0 28px 80px rgba(58, 17, 90, 0.28),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(18px);
     }
 
-    .box iframe {
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      border-radius: inherit;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.48), transparent 32%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.24), transparent 45%);
+    }
+
+    .card-header {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      z-index: 4;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .label {
+      width: fit-content;
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      margin-left: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      opacity: 0.65;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .open-link {
+      pointer-events: auto;
+      text-decoration: none;
+      color: #111;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .open-link:hover {
+      transform: translateY(-2px);
+      background: #fff;
+    }
+
+    .frame {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      padding-top: 0;
+    }
+
+    iframe {
       width: 100%;
       height: 100%;
       border: none;
       display: block;
-      background: #ececec;
+      background: #f2f2f2;
     }
 
-    .titulo {
-      position: absolute;
-      top: 12px;
-      left: 14px;
-      z-index: 3;
-      font-size: clamp(20px, 1.3vw, 26px);
-      letter-spacing: 1px;
-      color: #111;
-      pointer-events: none;
-      text-transform: uppercase;
-      background: rgba(236, 236, 236, 0.85);
-      padding: 4px 10px;
-      border-radius: 8px;
-    }
-
-    .split-area {
-      height: 100%;
-      display: grid;
-      grid-template-columns: 1fr 240px;
-      gap: 10px;
-      padding: 8px;
-    }
-
-    .mini-box {
-      border: 3px dashed #111;
-      background: #fff;
-      overflow: hidden;
-      border-radius: 12px;
-      position: relative;
-    }
-
-    .mini-box iframe {
-      border-radius: 8px;
-    }
-
-    .mini-title {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      z-index: 3;
-      font-size: 11px;
-      font-weight: bold;
-      letter-spacing: 0.5px;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 3px 6px;
-      border-radius: 6px;
-      text-transform: uppercase;
-      pointer-events: none;
-    }
-
-    .timer {
+    .music {
       grid-column: 1;
-      grid-row: 1;
-    }
-
-    .youtube {
-      grid-column: 1;
-      grid-row: 2;
+      grid-row: 1 / 3;
     }
 
     .medicina {
       grid-column: 2;
-      grid-row: 1 / 3;
+      grid-row: 1;
     }
 
-    @media (max-width: 900px) {
+    .timer {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    .music .label {
+      font-size: clamp(13px, 1vw, 16px);
+    }
+
+    .music .subtitle {
+      font-size: 13px;
+    }
+
+    .medicina .label,
+    .timer .label {
+      font-size: 12px;
+    }
+
+    .contador-flutuante {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 99;
+
+      width: 150px;
+      padding: 16px;
+      border-radius: 24px;
+
+      background: rgba(255, 255, 255, 0.88);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 18px 45px rgba(40, 10, 70, 0.28);
+      backdrop-filter: blur(16px);
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .contador-titulo {
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+
+    #contadorNumero {
+      font-size: 44px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .contador-flutuante button {
+      width: 100%;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 12px;
+
+      background: #111;
+      color: #fff;
+
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .contador-flutuante button:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
+    }
+
+    .contador-flutuante .reset-contador {
+      background: #7c52d9;
+      font-size: 12px;
+      padding: 8px 10px;
+    }
+
+    @media (max-width: 1050px) {
       body {
         padding: 16px;
       }
 
       .hub {
-        min-height: auto;
+        height: auto;
+        min-height: 0;
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 18px;
       }
 
-      .timer,
-      .youtube,
+      .card {
+        border-radius: 26px;
+      }
+
+      .music {
+        height: 72vh;
+        min-height: 520px;
+      }
+
       .medicina {
-        min-height: 300px;
+        height: 56vh;
+        min-height: 430px;
       }
 
-      .split-area {
-        grid-template-columns: 1fr;
-        grid-template-rows: minmax(260px, 1fr) minmax(220px, 260px);
+      .timer {
+        height: 46vh;
+        min-height: 340px;
+      }
+    }
+
+    @media (max-width: 650px) {
+      body {
+        padding: 10px;
+      }
+
+      .hub {
+        gap: 12px;
+      }
+
+      .card {
+        border-radius: 22px;
+      }
+
+      .card-header {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+      }
+
+      .label {
+        padding: 7px 10px;
+        font-size: 10px;
+        letter-spacing: 1px;
+      }
+
+      .subtitle {
+        display: none;
+      }
+
+      .open-link {
+        padding: 7px 10px;
+        font-size: 10px;
+      }
+
+      .music {
+        height: 68vh;
+        min-height: 470px;
+      }
+
+      .medicina {
+        height: 58vh;
+        min-height: 420px;
+      }
+
+      .timer {
+        height: 42vh;
+        min-height: 310px;
+      }
+
+      .contador-flutuante {
+        right: 12px;
+        bottom: 12px;
+        width: 126px;
+        padding: 12px;
+        border-radius: 20px;
+      }
+
+      #contadorNumero {
+        font-size: 34px;
+      }
+
+      .contador-flutuante button {
+        padding: 8px 10px;
+        font-size: 13px;
       }
     }
   </style>
@@ -141,34 +339,109 @@
 
   <main class="hub">
 
-    <section class="box timer">
-      <div class="titulo">TIMER</div>
-      <div class="split-area">
-        <iframe src="https://renanck.github.io/timer/"></iframe>
-        <div class="mini-box">
-          <div class="mini-title">Cronômetro</div>
-          <iframe srcdoc='<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><style>body{margin:0;height:100vh;display:flex;justify-content:center;align-items:center;background:#f5f5f5;font-family:Arial,sans-serif}.container{background:#fff;padding:18px;border-radius:14px;box-shadow:0 4px 14px rgba(0,0,0,.12);text-align:center;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center}h1{margin:0 0 10px;font-size:16px}#tempo{font-size:28px;font-weight:700;margin:10px 0;letter-spacing:1px}button{padding:6px 10px;margin:3px;border:none;border-radius:8px;font-size:12px;cursor:pointer;background:#111;color:#fff}.reset{background:#777}</style></head><body><div class="container"><h1>Cronômetro</h1><div id="tempo">00:00:00</div><div><button onclick="iniciar()">Iniciar</button><button onclick="pausar()">Pausar</button><button class="reset" onclick="resetar()">Resetar</button></div></div><script>let segundos=0;let intervalo=null;function atualizarTela(){const horas=Math.floor(segundos/3600);const minutos=Math.floor(segundos%3600/60);const segs=segundos%60;document.getElementById("tempo").textContent=String(horas).padStart(2,"0")+":"+String(minutos).padStart(2,"0")+":"+String(segs).padStart(2,"0")}function iniciar(){if(intervalo!==null)return;intervalo=setInterval(()=>{segundos++;atualizarTela()},1000)}function pausar(){clearInterval(intervalo);intervalo=null}function resetar(){pausar();segundos=0;atualizarTela()}</script></body></html>'></iframe>
+    <section class="card music">
+      <div class="card-header">
+        <div class="title-group">
+          <div class="label">Music</div>
+          <div class="subtitle">player principal</div>
         </div>
+
+        <a
+          class="open-link"
+          href="https://renanck.github.io/youtubemusica/index.html"
+          target="_blank"
+        >
+          Abrir
+        </a>
+      </div>
+
+      <div class="frame">
+        <iframe
+          src="https://renanck.github.io/youtubemusica/index.html"
+          title="RENANck Music"
+          loading="lazy">
+        </iframe>
       </div>
     </section>
 
-    <section class="box youtube">
-      <div class="titulo">MUSIC</div>
-      <iframe src="https://renanck.github.io/youtubemusica/index.html"></iframe>
+    <section class="card medicina">
+      <div class="card-header">
+        <div class="title-group">
+          <div class="label">Questões</div>
+          <div class="subtitle">medicina</div>
+        </div>
+
+        <a
+          class="open-link"
+          href="https://renanck.github.io/medicina/index.html"
+          target="_blank"
+        >
+          Abrir
+        </a>
+      </div>
+
+      <div class="frame">
+        <iframe
+          src="https://renanck.github.io/medicina/index.html"
+          title="Hiperfoco em Medicina"
+          loading="lazy">
+        </iframe>
+      </div>
     </section>
 
-    <section class="box medicina">
-      <div class="titulo">QUESTÕES</div>
-      <div class="split-area">
-        <iframe src="https://renanck.github.io/medicina/index.html"></iframe>
-        <div class="mini-box">
-          <div class="mini-title">Contador</div>
-          <iframe srcdoc='<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><style>body{margin:0;height:100vh;display:flex;justify-content:center;align-items:center;background:#f5f5f5;font-family:Arial,sans-serif}.container{background:#fff;padding:18px;border-radius:14px;box-shadow:0 4px 14px rgba(0,0,0,.12);text-align:center;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center}h1{margin:0 0 10px;font-size:16px}#contador{font-size:42px;font-weight:700;margin:10px 0}button{padding:8px 12px;border:none;border-radius:8px;font-size:13px;cursor:pointer;background:#111;color:#fff}.reset{margin-top:8px;background:#777;font-size:12px;padding:6px 10px}</style></head><body><div class="container"><h1>Contador</h1><div id="contador">0</div><button onclick="aumentar()">Clique aqui</button><button class="reset" onclick="resetar()">Resetar</button></div><script>let numero=0;function aumentar(){numero++;document.getElementById("contador").textContent=numero}function resetar(){numero=0;document.getElementById("contador").textContent=numero}</script></body></html>'></iframe>
+    <section class="card timer">
+      <div class="card-header">
+        <div class="title-group">
+          <div class="label">Timer</div>
+          <div class="subtitle">cronômetro</div>
         </div>
+
+        <a
+          class="open-link"
+          href="https://renanck.github.io/timer/"
+          target="_blank"
+        >
+          Abrir
+        </a>
+      </div>
+
+      <div class="frame">
+        <iframe
+          src="https://renanck.github.io/timer/"
+          title="Timer"
+          loading="lazy">
+        </iframe>
       </div>
     </section>
 
   </main>
+
+  <div class="contador-flutuante">
+    <div class="contador-titulo">Contador</div>
+    <div id="contadorNumero">0</div>
+
+    <button onclick="aumentarContador()">+1</button>
+    <button class="reset-contador" onclick="resetarContador()">Resetar</button>
+  </div>
+
+  <script>
+    let contador = Number(localStorage.getItem("contadorRENANck")) || 0;
+
+    const contadorNumero = document.getElementById("contadorNumero");
+    contadorNumero.textContent = contador;
+
+    function aumentarContador() {
+      contador++;
+      contadorNumero.textContent = contador;
+      localStorage.setItem("contadorRENANck", contador);
+    }
+
+    function resetarContador() {
+      contador = 0;
+      contadorNumero.textContent = contador;
+      localStorage.setItem("contadorRENANck", contador);
+    }
+  </script>
 
 </body>
 </html>
