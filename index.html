@@ -48,17 +48,52 @@
 
     .titulo {
       position: absolute;
-      inset: 0;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: clamp(34px, 2vw, 44px);
+      top: 12px;
+      left: 14px;
+      z-index: 3;
+      font-size: clamp(20px, 1.3vw, 26px);
       letter-spacing: 1px;
       color: #111;
       pointer-events: none;
       text-transform: uppercase;
-      background: transparent;
+      background: rgba(236, 236, 236, 0.85);
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+
+    .split-area {
+      height: 100%;
+      display: grid;
+      grid-template-columns: 1fr 240px;
+      gap: 10px;
+      padding: 8px;
+    }
+
+    .mini-box {
+      border: 3px dashed #111;
+      background: #fff;
+      overflow: hidden;
+      border-radius: 12px;
+      position: relative;
+    }
+
+    .mini-box iframe {
+      border-radius: 8px;
+    }
+
+    .mini-title {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      z-index: 3;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 3px 6px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      pointer-events: none;
     }
 
     .timer {
@@ -94,8 +129,9 @@
         min-height: 300px;
       }
 
-      .titulo {
-        font-size: clamp(28px, 7vw, 40px);
+      .split-area {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(260px, 1fr) minmax(220px, 260px);
       }
     }
   </style>
@@ -107,7 +143,13 @@
 
     <section class="box timer">
       <div class="titulo">TIMER</div>
-      <iframe src="https://renanck.github.io/timer/"></iframe>
+      <div class="split-area">
+        <iframe src="https://renanck.github.io/timer/"></iframe>
+        <div class="mini-box">
+          <div class="mini-title">Cronômetro</div>
+          <iframe srcdoc='<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><style>body{margin:0;height:100vh;display:flex;justify-content:center;align-items:center;background:#f5f5f5;font-family:Arial,sans-serif}.container{background:#fff;padding:18px;border-radius:14px;box-shadow:0 4px 14px rgba(0,0,0,.12);text-align:center;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center}h1{margin:0 0 10px;font-size:16px}#tempo{font-size:28px;font-weight:700;margin:10px 0;letter-spacing:1px}button{padding:6px 10px;margin:3px;border:none;border-radius:8px;font-size:12px;cursor:pointer;background:#111;color:#fff}.reset{background:#777}</style></head><body><div class="container"><h1>Cronômetro</h1><div id="tempo">00:00:00</div><div><button onclick="iniciar()">Iniciar</button><button onclick="pausar()">Pausar</button><button class="reset" onclick="resetar()">Resetar</button></div></div><script>let segundos=0;let intervalo=null;function atualizarTela(){const horas=Math.floor(segundos/3600);const minutos=Math.floor(segundos%3600/60);const segs=segundos%60;document.getElementById("tempo").textContent=String(horas).padStart(2,"0")+":"+String(minutos).padStart(2,"0")+":"+String(segs).padStart(2,"0")}function iniciar(){if(intervalo!==null)return;intervalo=setInterval(()=>{segundos++;atualizarTela()},1000)}function pausar(){clearInterval(intervalo);intervalo=null}function resetar(){pausar();segundos=0;atualizarTela()}</script></body></html>'></iframe>
+        </div>
+      </div>
     </section>
 
     <section class="box youtube">
@@ -117,7 +159,13 @@
 
     <section class="box medicina">
       <div class="titulo">QUESTÕES</div>
-      <iframe src="https://renanck.github.io/medicina/index.html"></iframe>
+      <div class="split-area">
+        <iframe src="https://renanck.github.io/medicina/index.html"></iframe>
+        <div class="mini-box">
+          <div class="mini-title">Contador</div>
+          <iframe srcdoc='<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><style>body{margin:0;height:100vh;display:flex;justify-content:center;align-items:center;background:#f5f5f5;font-family:Arial,sans-serif}.container{background:#fff;padding:18px;border-radius:14px;box-shadow:0 4px 14px rgba(0,0,0,.12);text-align:center;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center}h1{margin:0 0 10px;font-size:16px}#contador{font-size:42px;font-weight:700;margin:10px 0}button{padding:8px 12px;border:none;border-radius:8px;font-size:13px;cursor:pointer;background:#111;color:#fff}.reset{margin-top:8px;background:#777;font-size:12px;padding:6px 10px}</style></head><body><div class="container"><h1>Contador</h1><div id="contador">0</div><button onclick="aumentar()">Clique aqui</button><button class="reset" onclick="resetar()">Resetar</button></div><script>let numero=0;function aumentar(){numero++;document.getElementById("contador").textContent=numero}function resetar(){numero=0;document.getElementById("contador").textContent=numero}</script></body></html>'></iframe>
+        </div>
+      </div>
     </section>
 
   </main>
